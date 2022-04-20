@@ -558,6 +558,7 @@ contract ApeClockToken is ERC20Detailed, Ownable {
 
 	mapping(address => address) public referrals;
 	mapping(address => uint256) public referralComission;
+	mapping(address => uint256) public referralCount;
 	bool public referralProgramEnabled = true;
 	uint256 public referralFee = 10;
 	uint256 public liquidityFeeDiscount = 5;
@@ -642,13 +643,13 @@ contract ApeClockToken is ERC20Detailed, Ownable {
 		uint256 epoch = times.mul(1);
 
 		if (deltaTimeFromInit < (365 days)) {
-			rebaseRate = 1750;
-		} else if (deltaTimeFromInit >= (7 * 365 days)) {
-			rebaseRate = 2;
-		} else if (deltaTimeFromInit >= ((15 * 365 days) / 10)) {
-			rebaseRate = 17;
-		} else if (deltaTimeFromInit >= (365 days)) {
 			rebaseRate = 175;
+		} else if (deltaTimeFromInit >= (7 * 365 days)) {
+			rebaseRate = 1;
+		} else if (deltaTimeFromInit >= ((15 * 365 days) / 10)) {
+			rebaseRate = 3;
+		} else if (deltaTimeFromInit >= (365 days)) {
+			rebaseRate = 17;
 		}
 
 		for (uint256 i = 0; i < times; i++) {
@@ -966,6 +967,7 @@ contract ApeClockToken is ERC20Detailed, Ownable {
 		require(isReferrerValid(referrer), "Referrer doesn't have enough tokens to referr others");
 		require(referrals[msg.sender] == address(0), "You have already been referred");
 		referrals[msg.sender] = referrer;
+		referralCount[referrer] = referralCount[referrer] + 1;
 	}
 
 	function isReferrerValid(address referrer) internal view returns (bool) {
